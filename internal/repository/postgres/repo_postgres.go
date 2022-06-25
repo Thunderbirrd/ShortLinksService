@@ -15,7 +15,7 @@ func NewRepositoryPostgres(db *sqlx.DB) *RepositoryPostgres {
 }
 
 func (r *RepositoryPostgres) SaveNewUrl(urlObject models.UrlObject) error {
-	query := fmt.Sprintf("INSERT INTO %s (long_url, short_url) VALUES $1, $2 RETURNING id", urlTable)
+	query := fmt.Sprintf("INSERT INTO %s (long_url, short_url) VALUES ($1, $2) RETURNING id", urlTable)
 	_, err := r.db.Exec(query, urlObject.LongUrl, urlObject.ShortUrl)
 	if err != nil {
 		return err
@@ -24,12 +24,30 @@ func (r *RepositoryPostgres) SaveNewUrl(urlObject models.UrlObject) error {
 }
 
 func (r *RepositoryPostgres) CheckLongUrl(longUrl string) (string, error) {
-	var shortUrl string
+	var shortUrl []string
 	query := fmt.Sprintf("SELECT short_url FROM %s WHERE long_url = $1", urlTable)
 
 	if err := r.db.Select(&shortUrl, query, longUrl); err != nil {
-		return shortUrl, err
+		return "", err
 	}
 
-	return shortUrl, nil
+	if len(shortUrl) != 0 {
+		return shortUrl[0], nil
+	}
+	return "", nil
+}
+
+func (r *RepositoryPostgres) GetLongUrlByShortUrl(shortUrl string) (string, error) {
+	var longUrl []string
+	query := fmt.Sprintf("SELECT long_url FROM %s WHERE short_url = $1", urlTable)
+
+	if err := r.db.Select(&longUrl, query, shortUrl); err != nil {
+		return "", err
+	}
+
+	if len(longUrl) != 0 {
+		return longUrl[0], nil
+	}
+
+	return "", nil
 }

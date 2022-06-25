@@ -20,7 +20,7 @@ func main() {
 
 	db, err := postgres.NewPostgresDB(*cfg)
 	if err != nil {
-		logrus.Errorf("Failed to initialed db: %s", err.Error())
+		logrus.Fatalf("Failed to initialed db: %s", err.Error())
 	}
 
 	e := echo.New()
@@ -29,9 +29,11 @@ func main() {
 
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
-	handlers := handler.NewHandler(services)
+	handlers := handler.NewHandler(services, cfg.HttpPort)
 
 	e.POST("/create", handlers.CreateShortUrl)
+	e.GET("/:shortUrl", handlers.RedirectToLongUrl)
+	e.GET("/url/:shortUrl", handlers.GetLongUrl)
 
 	e.Logger.Fatal(e.Start(cfg.HttpPort))
 }

@@ -8,11 +8,12 @@ import (
 )
 
 type Handler struct {
+	port    string
 	service *service.Service
 }
 
-func NewHandler(service *service.Service) *Handler {
-	return &Handler{service: service}
+func NewHandler(service *service.Service, port string) *Handler {
+	return &Handler{service: service, port: port}
 }
 
 func (h *Handler) CreateShortUrl(c echo.Context) error {
@@ -25,10 +26,42 @@ func (h *Handler) CreateShortUrl(c echo.Context) error {
 	shortUrl, err := h.service.CreateShortUrl(*input)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"generated_url": shortUrl,
+		"generated_url": "http://localhost" + h.port + "/" + shortUrl,
 	})
+}
+
+func (h *Handler) GetLongUrl(c echo.Context) error {
+	shortUrl := c.Param("shortUrl")
+
+	longUrl, err := h.service.GetLongUrlByShortUrl(shortUrl)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if longUrl != "" {
+		return c.JSON(http.StatusOK, echo.Map{
+			"original_url": longUrl,
+		})
+	} else {
+		return c.JSON(http.StatusBadRequest, "No short url for this long url")
+	}
+}
+
+func (h *Handler) RedirectToLongUrl(c echo.Context) error {
+	shortUrl := c.Param("shortUrl")
+
+	longUrl, err := h.service.GetLongUrlByShortUrl(shortUrl)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	if longUrl != "" {
+		return c.Redirect(http.StatusPermanentRedirect, longUrl)
+	} else {
+		return c.JSON(http.StatusBadRequest, "No short url for this long url")
+	}
 }

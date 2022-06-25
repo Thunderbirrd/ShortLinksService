@@ -9,6 +9,7 @@ import (
 type UrlRepository interface {
 	SaveNewUrl(urlObject models.UrlObject) error
 	CheckLongUrl(longUrl string) (string, error)
+	GetLongUrlByShortUrl(shortUrl string) (string, error)
 }
 
 type Repository struct {

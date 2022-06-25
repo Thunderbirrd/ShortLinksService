@@ -4,6 +4,7 @@ import (
 	"github.com/Thunderbirrd/ShortLinksService/internal/repository"
 	"github.com/Thunderbirrd/ShortLinksService/pkg/models"
 	"github.com/Thunderbirrd/ShortLinksService/pkg/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type Service struct {
@@ -17,6 +18,7 @@ func NewService(repo *repository.Repository) *Service {
 func (s *Service) CreateShortUrl(urlObject models.UrlObject) (string, error) {
 	shortUrl, err := s.repo.CheckLongUrl(urlObject.LongUrl)
 	if err != nil {
+		logrus.Errorf("Error while getting short url from db: %s", err.Error())
 		return "", err
 	}
 
@@ -28,8 +30,20 @@ func (s *Service) CreateShortUrl(urlObject models.UrlObject) (string, error) {
 	err = s.repo.SaveNewUrl(urlObject)
 
 	if err != nil {
+		logrus.Errorf("Error while saving urls in db: %s", err.Error())
 		return "", err
 	}
 
 	return urlObject.ShortUrl, nil
+}
+
+func (s *Service) GetLongUrlByShortUrl(shortUrl string) (string, error) {
+	longUrl, err := s.repo.GetLongUrlByShortUrl(shortUrl)
+
+	if err != nil {
+		logrus.Errorf("Error while getting long url from db: %s", err.Error())
+		return "", err
+	}
+
+	return longUrl, nil
 }

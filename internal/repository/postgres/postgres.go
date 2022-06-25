@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Thunderbirrd/ShortLinksService/internal/config"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 const urlTable = "urls"
