@@ -5,6 +5,7 @@ import (
 	"github.com/Thunderbirrd/ShortLinksService/pkg/models"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"regexp"
 )
 
 type Handler struct {
@@ -21,6 +22,15 @@ func (h *Handler) CreateShortUrl(c echo.Context) error {
 
 	if err := c.Bind(input); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	match, err := regexp.MatchString("^https?://", input.LongUrl)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if !match {
+		return echo.NewHTTPError(http.StatusBadRequest, "not a URL")
 	}
 
 	shortUrl, err := h.service.CreateShortUrl(*input)
