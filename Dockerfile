@@ -6,7 +6,7 @@ FROM golang:1.17-buster AS build
 WORKDIR /ShortLinksService
 
 COPY . ./
-RUN go mod tidy
+RUN go mod download
 
 RUN go build -o /links-service ./cmd/main.go
 
