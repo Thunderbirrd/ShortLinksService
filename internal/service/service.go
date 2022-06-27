@@ -27,7 +27,7 @@ func (s *Service) CreateShortUrl(urlObject models.UrlObject) (string, error) {
 	}
 
 	urlObject.ShortUrl = utils.GenerateShortUrl(urlObject.LongUrl)
-	err = s.repo.SaveNewUrl(urlObject)
+	err = s.repo.SaveNewUrl(urlObject.LongUrl, urlObject.ShortUrl)
 
 	if err != nil {
 		logrus.Errorf("Error while saving urls in db: %s", err.Error())

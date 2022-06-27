@@ -19,5 +19,11 @@ func NewPostgresDB(cfg config.Config) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if err = MigrateUp("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		cfg.DBHost, cfg.DBPort, cfg.DBUsername, cfg.DBName, cfg.DBPassword, cfg.DBSSLMode)); err != nil {
+		return nil, err
+	}
+
 	return db, nil
 }

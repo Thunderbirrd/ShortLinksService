@@ -27,7 +27,15 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	repos := repository.NewRepository(db)
+	var repos *repository.Repository
+	if cfg.Mode == "postgres" {
+		repos = repository.NewRepositoryPostgres(db)
+	} else if cfg.Mode == "internal" {
+		repos = repository.NewRepositoryInternal(make(map[string]string))
+	} else {
+		panic("Wrong Mode value")
+	}
+
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services, cfg.HttpPort)
 

@@ -7,7 +7,6 @@ package mock_repository
 import (
 	reflect "reflect"
 
-	models "github.com/Thunderbirrd/ShortLinksService/pkg/models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -65,15 +64,15 @@ func (mr *MockUrlRepositoryMockRecorder) GetLongUrlByShortUrl(shortUrl interface
 }
 
 // SaveNewUrl mocks base method.
-func (m *MockUrlRepository) SaveNewUrl(urlObject models.UrlObject) error {
+func (m *MockUrlRepository) SaveNewUrl(longUrl, shortUrl string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveNewUrl", urlObject)
+	ret := m.ctrl.Call(m, "SaveNewUrl", longUrl, shortUrl)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveNewUrl indicates an expected call of SaveNewUrl.
-func (mr *MockUrlRepositoryMockRecorder) SaveNewUrl(urlObject interface{}) *gomock.Call {
+func (mr *MockUrlRepositoryMockRecorder) SaveNewUrl(longUrl, shortUrl interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveNewUrl", reflect.TypeOf((*MockUrlRepository)(nil).SaveNewUrl), urlObject)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveNewUrl", reflect.TypeOf((*MockUrlRepository)(nil).SaveNewUrl), longUrl, shortUrl)
 }

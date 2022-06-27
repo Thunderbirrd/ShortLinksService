@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"fmt"
-	"github.com/Thunderbirrd/ShortLinksService/pkg/models"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,9 +13,9 @@ func NewRepositoryPostgres(db *sqlx.DB) *RepositoryPostgres {
 	return &RepositoryPostgres{db: db}
 }
 
-func (r *RepositoryPostgres) SaveNewUrl(urlObject models.UrlObject) error {
+func (r *RepositoryPostgres) SaveNewUrl(longUrl, shortUrl string) error {
 	query := fmt.Sprintf("INSERT INTO %s (long_url, short_url) VALUES ($1, $2) RETURNING id", urlTable)
-	_, err := r.db.Exec(query, urlObject.LongUrl, urlObject.ShortUrl)
+	_, err := r.db.Exec(query, longUrl, shortUrl)
 	if err != nil {
 		return err
 	}
