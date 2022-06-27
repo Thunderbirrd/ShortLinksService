@@ -6,7 +6,7 @@ Links shortener with Golang
 - ### `/create` - generate new short link
   **Request**: `POST`
     ```json
-    { "url": "https://" }
+    { "long_url": "https://" }
     ```
   **Response**:
     ```json
